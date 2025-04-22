@@ -1,7 +1,7 @@
 import MediaContent from "../media-content";
 import { CONFIG } from "./config";
 import { AdEvent, BaseEvent, Context, IAdContent, RequestCompleteEvent, Slot, SlotEvent } from "./model";
-console.log("CONFIG", CONFIG);
+
 class AdContent {
     private _videoElement: HTMLVideoElement;
     private _videoConfig: Record<PropertyKey, string | number>;
@@ -218,7 +218,8 @@ class AdContent {
             this._adContext.removeEventListener(window.tv.freewheel.SDK.EVENT_CONTENT_VIDEO_RESUME_REQUEST, this.onContentResumeRequest);
             this._adContext.dispose();
             this._adContext = null;
-            this._mediaContent.detach();
+            this._adVideoElement.src = "";
+            this._mediaContent.destroy();
         }
     }
 }

@@ -26,6 +26,10 @@ class MediaContent {
         this._hls.detachMedia();
     }
 
+    public destroy(): void {
+        this._hls.destroy();
+    }
+
     public async play(): Promise<void> {
         await this._videoElement.play();
     }
