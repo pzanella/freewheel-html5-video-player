@@ -1,8 +1,10 @@
+const { VITE_NETWORK_ID, VITE_SERVER_URL, VITE_PROFILE_ID, VITE_SITE_SECTION_ID } = import.meta.env;
+
 export const CONFIG = {
-    NETWORK_ID: 42015,
-    SERVER_URL: "https://demo.v.fwmrm.net/ad/g/1",
-    PROFILE_ID: "42015:js_allinone_profile",
-    SITE_SECTION_ID: "js_allinone_demo_site_section",
+    NETWORK_ID: VITE_NETWORK_ID,
+    SERVER_URL: VITE_SERVER_URL,
+    PROFILE_ID: VITE_PROFILE_ID,
+    SITE_SECTION_ID: VITE_SITE_SECTION_ID,
     VIDEO_ELEMENT: {
         EVENTS: {
             TIMEUPDATE: "timeupdate",

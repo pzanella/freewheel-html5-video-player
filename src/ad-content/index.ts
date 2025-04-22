@@ -1,7 +1,7 @@
 import MediaContent from "../media-content";
 import { CONFIG } from "./config";
 import { AdEvent, BaseEvent, Context, IAdContent, RequestCompleteEvent, Slot, SlotEvent } from "./model";
-
+console.log("CONFIG", CONFIG);
 class AdContent {
     private _videoElement: HTMLVideoElement;
     private _videoConfig: Record<PropertyKey, string | number>;
@@ -14,9 +14,9 @@ class AdContent {
     private _adContainerElement: HTMLDivElement;
     private _adVideoElement: HTMLVideoElement;
 
-    constructor({ adContainer, videoElement, videoConfig, mediaContent }: IAdContent) {
+    constructor({ adContainer, videoElement, playerConfig, mediaContent }: IAdContent) {
         this._videoElement = videoElement;
-        this._videoConfig = videoConfig;
+        this._videoConfig = playerConfig;
         this._slots = new Map();
         this._mediaContent = mediaContent;
         this._adContainerElement = adContainer;
@@ -30,14 +30,14 @@ class AdContent {
         this.onContentVideoEnded = this.onContentVideoEnded.bind(this);
     }
 
-    public init() {
+    public init(): void {
         this._adManager = new window.tv.freewheel.SDK.AdManager();
         this._adManager.setNetwork(CONFIG.NETWORK_ID);
         this._adManager.setServer(CONFIG.SERVER_URL);
         this._adContext = this._adManager.newContext();
         this._adContext?.setProfile(CONFIG.PROFILE_ID);
         this._adContext?.setSiteSection(CONFIG.SITE_SECTION_ID);
-        this._adContext?.setVideoAsset(this._videoConfig.asset_id, this._mediaContent.duration); // FIXME: video duration is necessary?
+        this._adContext?.setVideoAsset(this._videoConfig.assetId, this._mediaContent.duration); // FIXME: video duration is necessary?
 
         // Let context object knows where to render the ad, using the id of a div containing a video element
         this._adContext?.registerVideoDisplayBase("ad-container");
@@ -48,11 +48,15 @@ class AdContent {
     }
 
     private requestAds(): void {
-        // Add custom target key
-        // NB: example => this._adContext?.addKeyValue("skippable", "enabled");
+        /** Add custom target key
+         * EXAMPLE:
+         * this._adContext?.addKeyValue("skippable", "enabled");
+         */
 
-        // Register exstensions
-        // NB: example => this._adContext?.setParameter("extension.skippableAd.enabled", true, window.tv.freewheel.SDK.PARAMETER_LEVEL_GLOBAL);
+        /** Register exstensions
+         * EXAMPLE:
+         * this._adContext?.setParameter("extension.skippableAd.enabled", true, window.tv.freewheel.SDK.PARAMETER_LEVEL_GLOBAL);
+         */
 
         // Submit ad request
         this._adContext?.submitRequest();
@@ -65,7 +69,7 @@ class AdContent {
             temporalSlots?.forEach((slot: Slot) => {
                 const position = slot.getTimePositionClass();
 
-                // FIXME: add multiple slots to the map array
+                // FIXME: handle multiple slots using a Map
                 this._slots.set(position, slot);
             });
             this._currentSlot = this._slots.get(window.tv.freewheel.SDK.TIME_POSITION_CLASS_PREROLL);
@@ -130,7 +134,7 @@ class AdContent {
 
     public mute(): void {
         this._adVideoElement.muted = !this._adVideoElement.muted;
-        this._adVideoElement.volume = this._adVideoElement.muted ? 0 : 0.25; // FIXME: understand the volume limit, it seems that the value does not match the limit of 1
+        this._adVideoElement.volume = this._adVideoElement.muted ? 0 : 0.25;
     }
 
     private onContentTimeUpdate(): void {
@@ -158,7 +162,7 @@ class AdContent {
     }
 
     public addEventListener(): void {
-        // TODO: error events are missing
+        // FIXME: error events are missing
         const EVENTS = window.tv.freewheel.SDK;
         const events = Object.entries(EVENTS).reduce((previous: any, [key, value]) => {
             if (key.startsWith("EVENT_")) {
@@ -166,13 +170,6 @@ class AdContent {
             }
             return previous;
         }, []);
-
-        // const errors = Object.entries(EVENTS).reduce((previous: any, [key, value]) => {
-        //     if (key.startsWith("ERROR_")) {
-        //         previous.push(value);
-        //     }
-        //     return previous;
-        // }, []);
 
         events.forEach((eventName: string) => {
             switch (eventName) {
@@ -213,7 +210,6 @@ class AdContent {
     }
 
     private dispose(): void {
-        // Dispose context after postroll ended or content ended (no postroll)
         if (this._adContext) {
             this._adContext.removeEventListener(window.tv.freewheel.SDK.EVENT_REQUEST_COMPLETE, this.onRequestComplete);
             this._adContext.removeEventListener(window.tv.freewheel.SDK.EVENT_SLOT_STARTED, this.onSlotStarted);

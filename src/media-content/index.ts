@@ -16,21 +16,21 @@ class MediaContent {
         }
     }
 
-    public init() {
+    public init(): typeof window.Hls {
         this._hls.loadSource(this._manifestUrl.toString());
         this._hls.attachMedia(this._videoElement);
         return this._hls;
     }
 
-    public detach() {
+    public detach(): void {
         this._hls.detachMedia();
     }
 
-    public async play() {
+    public async play(): Promise<void> {
         await this._videoElement.play();
     }
 
-    public pause() {
+    public pause(): void {
         this._videoElement.pause();
     }
 
@@ -38,11 +38,11 @@ class MediaContent {
         this._videoElement.currentTime = time;
     }
 
-    public get currentTime() {
+    public get currentTime(): number {
         return this._videoElement.currentTime;
     }
 
-    public get duration() {
+    public get duration(): number {
         return this._videoElement.duration;
     }
 }

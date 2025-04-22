@@ -4,3 +4,8 @@ declare global {
         Hls: any;
     }
 }
+
+export type PlayerConfig = {
+    assetId: number | string;
+    manifestUrl: string;
+};

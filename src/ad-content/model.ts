@@ -3,7 +3,7 @@ import MediaContent from "../media-content";
 export interface IAdContent {
     adContainer: HTMLDivElement;
     videoElement: HTMLVideoElement;
-    videoConfig: Record<PropertyKey, string | number>;
+    playerConfig: Record<PropertyKey, string | number>;
     mediaContent: MediaContent;
 }
 

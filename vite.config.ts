@@ -1,4 +1,3 @@
-import legacy from "@vitejs/plugin-legacy";
 import path from "path";
 import { defineConfig } from "vite";
 import mkcert from "vite-plugin-mkcert";
@@ -13,11 +12,11 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 bundle: path.resolve(__dirname, "./src/main.ts"),
-                page: path.resolve(__dirname, "./index.hbbtv.html"),
+                page: path.resolve(__dirname, "./index.html"),
             },
             output: {
                 entryFileNames: "[name].js",
-                format: "iife",
+                format: "es",
             },
         },
     },
@@ -27,16 +26,5 @@ export default defineConfig({
     },
     plugins: [
         mkcert(),
-        legacy({
-            targets: ["Chrome >= 36"],
-            renderModernChunks: false,
-            renderLegacyChunks: true,
-        }),
-        {
-            name: "html-transform",
-            transformIndexHtml: (html) => {
-                return html.replace("<!DOCTYPE html>", '<!DOCTYPE html PUBLIC "-//HbbTV//1.1.1//EN" "http://www.hbbtv.org/dtd/HbbTV-1.1.1.dtd">');
-            },
-        },
     ],
 });

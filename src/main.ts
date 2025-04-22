@@ -1,46 +1,76 @@
 import AdContent from "./ad-content";
+import { CONFIG } from "./config";
 import MediaContent from "./media-content";
+import { PlayerConfig } from "./model";
 
-const videoElement: HTMLVideoElement | null = document.querySelector("#container video#content");
-const adContainer: HTMLDivElement | null = document.querySelector("#container div#ad-container");
+class Player {
+    private _videoElement: HTMLVideoElement | null;
+    private _adContainer: HTMLDivElement | null;
+    private _buttonPlaybackElement: HTMLButtonElement | null;
+    private _buttonMuteElement: HTMLButtonElement | null;
 
-const buttonPlaybackElement: HTMLButtonElement | null = document.querySelector("#btn-play");
-const buttonMuteElement: HTMLButtonElement | null = document.querySelector("#btn-mute");
+    constructor() {
+        this._videoElement = document.querySelector("#container video#content");
+        this._adContainer = document.querySelector("#container div#ad-container");
+        this._buttonPlaybackElement = document.querySelector("#btn-play");
+        this._buttonMuteElement = document.querySelector("#btn-mute");
+    }
 
-const videoConfig = {
-    asset_id: 12345,
-};
-const manifestUrl: URL = new URL("https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8");
+    public init(playerConfig: PlayerConfig): void {
+        console.log("Player init method called");
 
-if (adContainer && videoElement) {
-    const mediaContent: MediaContent = new MediaContent({ videoElement, manifestUrl });
-    const adContent: AdContent = new AdContent({ adContainer, videoElement, videoConfig, mediaContent });
-    mediaContent.init();
-
-    videoElement.addEventListener(
-        "loadedmetadata",
-        () => {
-            adContent.init();
-        },
-        { once: true },
-    );
-
-    buttonPlaybackElement?.addEventListener("click", () => {
-        if (buttonPlaybackElement.textContent === "PLAY") {
-            buttonPlaybackElement.textContent = "PAUSE";
-            adContent.play();
-        } else {
-            buttonPlaybackElement.textContent = "PLAY";
-            adContent.pause();
+        if (!this._videoElement || !this._adContainer) {
+            console.error("Video element or ad container not found");
+            return;
         }
-    });
 
-    buttonMuteElement?.addEventListener("click", () => {
-        if (buttonMuteElement.textContent === "MUTE") {
-            buttonMuteElement.textContent = "UNMUTE";
-        } else {
-            buttonMuteElement.textContent = "MUTE";
+        if (!playerConfig || !Object.hasOwn(playerConfig, "manifestUrl") || !Object.hasOwn(playerConfig, "assetId")) {
+            console.error("Player config or manifest URL or assetId not provided");
+            return;
         }
-        adContent.mute();
-    });
+
+        const manifestUrl: URL = new URL(playerConfig.manifestUrl);
+        const mediaContent: MediaContent = new MediaContent({ videoElement: this._videoElement, manifestUrl });
+        const adContent: AdContent = new AdContent({ adContainer: this._adContainer, videoElement: this._videoElement, playerConfig, mediaContent });
+        mediaContent.init();
+
+        this._videoElement.addEventListener(
+            "loadedmetadata",
+            () => {
+                adContent.init();
+            },
+            { once: true },
+        );
+
+        this._buttonPlaybackElement?.addEventListener("click", () => {
+            if (this._buttonPlaybackElement) {
+                if (this._buttonPlaybackElement.textContent === "PLAY") {
+                    this._buttonPlaybackElement.textContent = "PAUSE";
+                    adContent.play();
+                } else {
+                    this._buttonPlaybackElement.textContent = "PLAY";
+                    adContent.pause();
+                }
+            }
+        });
+
+        this._buttonMuteElement?.addEventListener("click", () => {
+            if (this._buttonMuteElement) {
+                if (this._buttonMuteElement.textContent === "MUTE") {
+                    this._buttonMuteElement.textContent = "UNMUTE";
+                } else {
+                    this._buttonMuteElement.textContent = "MUTE";
+                }
+                adContent.mute();
+            }
+        });
+    }
 }
+
+const playerConfig: PlayerConfig = {
+    assetId: CONFIG.ASSET_ID,
+    manifestUrl: CONFIG.MANIFEST_URL,
+};
+
+const player: Player = new Player();
+player.init(playerConfig);
