@@ -1,8 +1,9 @@
+import Emitter from "../emitter";
 import MediaContent from "../media-content";
 import { CONFIG } from "./config";
 import { AdEvent, BaseEvent, Context, IAdContent, RequestCompleteEvent, Slot, SlotEvent } from "./model";
 
-class AdContent {
+class AdContent extends Emitter {
     private _videoElement: HTMLVideoElement;
     private _videoConfig: Record<PropertyKey, string | number>;
     private _mediaContent: MediaContent;
@@ -15,6 +16,7 @@ class AdContent {
     private _adVideoElement: HTMLVideoElement;
 
     constructor({ adContainer, videoElement, playerConfig, mediaContent }: IAdContent) {
+        super();
         this._videoElement = videoElement;
         this._videoConfig = playerConfig;
         this._slots = new Map();
@@ -174,37 +176,37 @@ class AdContent {
         events.forEach((eventName: string) => {
             switch (eventName) {
                 case EVENTS.EVENT_CONTENT_VIDEO_PAUSE_REQUEST:
-                    this._adContext?.addEventListener(EVENTS.EVENT_CONTENT_VIDEO_PAUSE_REQUEST, (event: SlotEvent) => {
-                        console.log("+++ onContentPauseRequest", event);
+                    this._adContext?.addEventListener(EVENTS.EVENT_CONTENT_VIDEO_PAUSE_REQUEST, (payload: SlotEvent) => {
+                        this.emit(EVENTS.EVENT_CONTENT_VIDEO_PAUSE_REQUEST, payload);
                         this.onContentPauseRequest();
                     });
                     break;
                 case EVENTS.EVENT_CONTENT_VIDEO_RESUME_REQUEST:
-                    this._adContext?.addEventListener(EVENTS.EVENT_CONTENT_VIDEO_RESUME_REQUEST, (event: SlotEvent) => {
-                        console.log("+++ onContentResumeRequest", event);
+                    this._adContext?.addEventListener(EVENTS.EVENT_CONTENT_VIDEO_RESUME_REQUEST, (payload: SlotEvent) => {
+                        this.emit(EVENTS.EVENT_CONTENT_VIDEO_RESUME_REQUEST, payload);
                         this.onContentResumeRequest();
                     });
                     break;
                 case EVENTS.EVENT_REQUEST_COMPLETE:
-                    this._adContext?.addEventListener(EVENTS.EVENT_REQUEST_COMPLETE, (event: RequestCompleteEvent) => {
-                        console.log("+++ onRequestComplete", event);
-                        this.onRequestComplete(event);
+                    this._adContext?.addEventListener(EVENTS.EVENT_REQUEST_COMPLETE, (payload: RequestCompleteEvent) => {
+                        this.emit(EVENTS.EVENT_REQUEST_COMPLETE, payload);
+                        this.onRequestComplete(payload);
                     });
                     break;
                 case EVENTS.EVENT_SLOT_STARTED:
-                    this._adContext?.addEventListener(EVENTS.EVENT_SLOT_STARTED, (event: SlotEvent) => {
-                        console.log("+++ onSlotStarted", event);
+                    this._adContext?.addEventListener(EVENTS.EVENT_SLOT_STARTED, (payload: SlotEvent) => {
+                        this.emit(EVENTS.EVENT_SLOT_STARTED, payload);
                         this.onSlotStarted();
                     });
                     break;
                 case EVENTS.EVENT_SLOT_ENDED:
-                    this._adContext?.addEventListener(EVENTS.EVENT_SLOT_ENDED, (event: SlotEvent) => {
-                        console.log("+++ onSlotEnded", event);
-                        this.onSlotEnded(event);
+                    this._adContext?.addEventListener(EVENTS.EVENT_SLOT_ENDED, (payload: SlotEvent) => {
+                        this.emit(EVENTS.EVENT_SLOT_ENDED, payload);
+                        this.onSlotEnded(payload);
                     });
                     break;
                 default:
-                    this._adContext?.addEventListener(eventName, (event: BaseEvent | AdEvent | SlotEvent) => console.log("+++", eventName, event));
+                    this._adContext?.addEventListener(eventName, (payload: BaseEvent | AdEvent | SlotEvent) => this.emit(eventName, payload));
             }
         });
     }

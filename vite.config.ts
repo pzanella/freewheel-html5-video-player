@@ -21,7 +21,7 @@ export default defineConfig({
         },
     },
     server: {
-        host: "local.video.sky.it",
+        // host: "local.video.sky.it",
         open: "./index.html",
     },
     plugins: [

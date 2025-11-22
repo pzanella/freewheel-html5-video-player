@@ -1,0 +1,53 @@
+.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-size, 24px);
+    height: var(--icon-size, 24px);
+    min-width: var(--icon-size, 24px);
+    min-height: var(--icon-size, 24px);
+    flex-shrink: 0;
+
+    svg {
+        width: 100%;
+        height: 100%;
+        color: inherit;
+        fill: currentColor;
+        display: block;
+    }
+
+    // Icon type variants
+    &--play {
+        svg {
+            fill: currentColor;
+        }
+    }
+
+    &--pause {
+        svg {
+            fill: currentColor;
+        }
+    }
+
+    &--volumeOn {
+        svg {
+            fill: currentColor;
+        }
+    }
+
+    &--volumeOff {
+        svg {
+            fill: currentColor;
+        }
+    }
+
+    &--unknown {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: #ccc;
+        background-color: #f0f0f0;
+        border-radius: 2px;
+    }
+}

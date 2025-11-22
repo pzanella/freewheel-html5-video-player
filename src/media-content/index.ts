@@ -1,11 +1,13 @@
-import { IMediaContent } from "./model";
+import { IMediaContent, videoElementEvents } from "./model";
+import Emitter from "../emitter";
 
-class MediaContent {
+class MediaContent extends Emitter {
     private _videoElement: HTMLVideoElement;
     private _manifestUrl: URL;
     private _hls: typeof window.Hls;
 
     constructor({ videoElement, manifestUrl }: IMediaContent) {
+        super();
         this._videoElement = videoElement;
         this._manifestUrl = manifestUrl;
         if (window.Hls.isSupported()) {
@@ -19,6 +21,7 @@ class MediaContent {
     public init(): typeof window.Hls {
         this._hls.loadSource(this._manifestUrl.toString());
         this._hls.attachMedia(this._videoElement);
+        this._eventListener();
         return this._hls;
     }
 
@@ -48,6 +51,14 @@ class MediaContent {
 
     public get duration(): number {
         return this._videoElement.duration;
+    }
+
+    private _eventListener = () => {
+        videoElementEvents.forEach((event) => {
+            this._videoElement.addEventListener(event, () => {
+                this.emit(event, { name: event });
+            });
+        });
     }
 }
 
