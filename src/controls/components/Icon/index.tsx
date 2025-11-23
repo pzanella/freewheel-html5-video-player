@@ -2,7 +2,7 @@ import { h, FunctionComponent } from "preact";
 import { SVG_ICONS } from "./model";
 import "./style.scss";
 
-export type IconType = "play" | "pause" | "volumeOn" | "volumeOff";
+export type IconType = "play" | "pause" | "mutedOn" | "mutedOff";
 
 interface IconProps {
     type: IconType;

@@ -8,6 +8,7 @@ declare global {
 export type PlayerConfig = {
     assetId: number | string;
     manifestUrl: string;
+    autoplay?: boolean;
 };
 
 export enum CONTENT_TYPE {
@@ -58,4 +59,5 @@ export enum EVENTS {
 export type Store = {
     type: CONTENT_TYPE;
     playbackStatus: PLAYBACK_STATUS;
+    mute: boolean;
 };

@@ -8,6 +8,8 @@
 
     .controls {
         position: absolute;
+        display: flex;
+        align-items: center;
         bottom: 0;
         left: 0;
         width: inherit;

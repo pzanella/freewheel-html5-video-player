@@ -1,11 +1,12 @@
 import Emitter from "../emitter";
 import MediaContent from "../media-content";
+import { PlayerConfig } from "../model";
 import { CONFIG } from "./config";
 import { AdEvent, BaseEvent, Context, IAdContent, RequestCompleteEvent, Slot, SlotEvent } from "./model";
 
 class AdContent extends Emitter {
     private _videoElement: HTMLVideoElement;
-    private _videoConfig: Record<PropertyKey, string | number>;
+    private _videoConfig: PlayerConfig;
     private _mediaContent: MediaContent;
     private _adManager: typeof window.tv.freewheel;
     private _adContext: Context | null = null;
@@ -135,8 +136,13 @@ class AdContent extends Emitter {
     }
 
     public mute(): void {
-        this._adVideoElement.muted = !this._adVideoElement.muted;
-        this._adVideoElement.volume = this._adVideoElement.muted ? 0 : 0.25;
+        this._adVideoElement.muted = true;
+        this._adVideoElement.volume = 0;
+    }
+
+    public unmute(): void {
+        this._adVideoElement.muted = false;
+        this._adVideoElement.volume = 0.25;
     }
 
     private onContentTimeUpdate(): void {

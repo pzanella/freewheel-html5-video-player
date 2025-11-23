@@ -1,6 +1,7 @@
 import { h, FunctionComponent } from "preact";
 import "./style.scss";
 import { Playback } from "./Playback";
+import { Muted } from "./Volume";
 
 interface LayoutProps { }
 
@@ -12,6 +13,7 @@ const Layout: FunctionComponent<LayoutProps> = () => {
         <video id="content" style="width: inherit; height: inherit;"></video>
         <div className="controls">
             <Playback />
+            <Muted />
         </div>
     </div>;
 };

@@ -53,6 +53,14 @@ class MediaContent extends Emitter {
         return this._videoElement.duration;
     }
 
+    public mute(): void {
+        this._videoElement.muted = true;
+    }
+
+    public unmute(): void {
+        this._videoElement.muted = false;
+    }
+
     private _eventListener = () => {
         videoElementEvents.forEach((event) => {
             this._videoElement.addEventListener(event, () => {

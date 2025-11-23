@@ -1,9 +1,10 @@
 import MediaContent from "../media-content";
+import { PlayerConfig } from "../model";
 
 export interface IAdContent {
     adContainer: HTMLDivElement;
     videoElement: HTMLVideoElement;
-    playerConfig: Record<PropertyKey, string | number>;
+    playerConfig: PlayerConfig;
     mediaContent: MediaContent;
 }
 

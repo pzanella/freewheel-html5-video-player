@@ -4,8 +4,9 @@ import Controls from "./controls";
 import Emitter from "./emitter";
 import MediaContent from "./media-content";
 import { CONTENT_TYPE, EVENTS, PLAYBACK_STATUS, PlayerConfig } from "./model";
-import { setType } from "./store";
+import { setType, initializeStore } from "./store";
 import store from "./store";
+import { logger } from "./logger";
 
 class Player extends Emitter {
     private _containerNode: HTMLDivElement | null;
@@ -16,17 +17,20 @@ class Player extends Emitter {
     }
 
     public init(playerConfig: PlayerConfig): void {
-        console.log("Player init method called");
+        logger.log("Player init method called", playerConfig);
 
         if (!this._containerNode) {
-            console.error("Container node not found");
+            logger.error("Container node not found");
             return;
         }
 
         if (!playerConfig || !Object.hasOwn(playerConfig, "manifestUrl") || !Object.hasOwn(playerConfig, "assetId")) {
-            console.error("Player config or manifest URL or assetId not provided");
+            logger.error("Player config or manifest URL or assetId not provided");
             return;
         }
+
+        initializeStore(playerConfig.autoplay ?? false);
+        logger.log("Store initialized with autoplay:", playerConfig.autoplay ?? false);
 
         const controls = new Controls(this._containerNode);
         controls.init();
@@ -44,12 +48,24 @@ class Player extends Emitter {
         });
 
         adContent.once(EVENTS.ADS_REQUEST_COMPLETE, () => {
+            logger.log("ADS_REQUEST_COMPLETE event triggered");
             setType(CONTENT_TYPE.ADS);
-            adContent.play();
+            const currentStatus = store.getState().playbackStatus;
+            if (currentStatus === PLAYBACK_STATUS.PLAYING) {
+                logger.log("Auto-playing ads");
+                adContent.play();
+            }
         });
 
-        adContent.once(EVENTS.ADS_COMPLETE, () => {
+        // TODO: add ADS error event
+        adContent.once([EVENTS.ADS_COMPLETE], () => {
+            logger.log("ADS_COMPLETE event triggered");
             setType(CONTENT_TYPE.VOD);
+            const currentStatus = store.getState().playbackStatus;
+            if (currentStatus === PLAYBACK_STATUS.PLAYING) {
+                logger.log("Auto-playing media content after ads");
+                mediaContent.play();
+            }
         });
 
         mediaContent.once(EVENTS.VIDEO_PLAYING, () => {
@@ -57,11 +73,11 @@ class Player extends Emitter {
         });
 
         adContent.on(Object.entries(EVENTS).map(([_, value]) => value), (event: string) => {
-            console.log("AdContent event", event);
+            logger.log("AdContent event", event);
         });
 
         mediaContent.on(Object.entries(EVENTS).map(([_, value]) => value), (event: string) => {
-            console.log("MediaContent event", event);
+            logger.log("MediaContent event", event);
         });
 
         store.subscribe(
@@ -79,6 +95,18 @@ class Player extends Emitter {
                     } else {
                         mediaContent.pause();
                     }
+                }
+            }
+        );
+
+        store.subscribe(
+            (state) => ({ type: state.type, mute: state.mute }),
+            ({ type, mute }) => {
+                logger.log(`Mute state changed to ${mute} for ${type}`);
+                if (type === CONTENT_TYPE.ADS) {
+                    mute ? adContent.mute() : adContent.unmute();
+                } else if (type === CONTENT_TYPE.VOD) {
+                    mute ? mediaContent.mute() : mediaContent.unmute();
                 }
             }
         );
