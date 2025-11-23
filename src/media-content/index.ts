@@ -1,5 +1,6 @@
 import { IMediaContent, videoElementEvents } from "./model";
 import Emitter from "../emitter";
+import { logger } from "../logger";
 
 class MediaContent extends Emitter {
     private _videoElement: HTMLVideoElement;
@@ -11,10 +12,10 @@ class MediaContent extends Emitter {
         this._videoElement = videoElement;
         this._manifestUrl = manifestUrl;
         if (window.Hls.isSupported()) {
-            console.log("HLS is supported!");
+            logger.log("HLS is supported!");
             this._hls = new window.Hls();
         } else {
-            console.log("HLS not supported!");
+            logger.log("HLS not supported!");
         }
     }
 
@@ -23,14 +24,6 @@ class MediaContent extends Emitter {
         this._hls.attachMedia(this._videoElement);
         this._eventListener();
         return this._hls;
-    }
-
-    public detach(): void {
-        this._hls.detachMedia();
-    }
-
-    public destroy(): void {
-        this._hls.destroy();
     }
 
     public async play(): Promise<void> {

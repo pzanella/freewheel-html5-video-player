@@ -1,15 +1,16 @@
 import AdContent from "./ad-content";
-import { CONFIG } from "./config";
 import Controls from "./controls";
 import Emitter from "./emitter";
 import MediaContent from "./media-content";
 import { CONTENT_TYPE, EVENTS, PLAYBACK_STATUS, PlayerConfig } from "./model";
-import { setType, initializeStore } from "./store";
+import { setType } from "./store";
 import store from "./store";
 import { logger } from "./logger";
 
 class Player extends Emitter {
     private _containerNode: HTMLDivElement | null;
+    private _mediaContent!: MediaContent;
+    private _adContent!: AdContent;
 
     constructor() {
         super();
@@ -29,9 +30,6 @@ class Player extends Emitter {
             return;
         }
 
-        initializeStore(playerConfig.autoplay ?? false);
-        logger.log("Store initialized with autoplay:", playerConfig.autoplay ?? false);
-
         const controls = new Controls(this._containerNode);
         controls.init();
 
@@ -39,44 +37,44 @@ class Player extends Emitter {
         const _adContainer = document.querySelector("#container div#ad-container") as HTMLDivElement;
 
         const manifestUrl: URL = new URL(playerConfig.manifestUrl);
-        const mediaContent: MediaContent = new MediaContent({ videoElement: _videoElement, manifestUrl });
-        const adContent: AdContent = new AdContent({ adContainer: _adContainer, videoElement: _videoElement, playerConfig, mediaContent });
-        mediaContent.init();
+        this._mediaContent = new MediaContent({ videoElement: _videoElement, manifestUrl });
+        this._adContent = new AdContent({ adContainer: _adContainer, videoElement: _videoElement, playerConfig, mediaContent: this._mediaContent });
+        this._mediaContent.init();
 
-        mediaContent.once(EVENTS.VIDEO_LOADEDMETADATA, () => {
-            adContent.init();
+        this._mediaContent.once(EVENTS.VIDEO_LOADEDMETADATA, () => {
+            this._adContent.init();
         });
 
-        adContent.once(EVENTS.ADS_REQUEST_COMPLETE, () => {
+        this._adContent.once(EVENTS.ADS_REQUEST_COMPLETE, () => {
             logger.log("ADS_REQUEST_COMPLETE event triggered");
             setType(CONTENT_TYPE.ADS);
             const currentStatus = store.getState().playbackStatus;
             if (currentStatus === PLAYBACK_STATUS.PLAYING) {
                 logger.log("Auto-playing ads");
-                adContent.play();
+                this._adContent.play();
             }
         });
 
         // TODO: add ADS error event
-        adContent.once([EVENTS.ADS_COMPLETE], () => {
+        this._adContent.once([EVENTS.ADS_COMPLETE], () => {
             logger.log("ADS_COMPLETE event triggered");
             setType(CONTENT_TYPE.VOD);
             const currentStatus = store.getState().playbackStatus;
             if (currentStatus === PLAYBACK_STATUS.PLAYING) {
                 logger.log("Auto-playing media content after ads");
-                mediaContent.play();
+                this._mediaContent.play();
             }
         });
 
-        mediaContent.once(EVENTS.VIDEO_PLAYING, () => {
+        this._mediaContent.once(EVENTS.VIDEO_PLAYING, () => {
             setType(CONTENT_TYPE.VOD);
         });
 
-        adContent.on(Object.entries(EVENTS).map(([_, value]) => value), (event: string) => {
+        this._adContent.on(Object.entries(EVENTS).map(([_, value]) => value), (event: string) => {
             logger.log("AdContent event", event);
         });
 
-        mediaContent.on(Object.entries(EVENTS).map(([_, value]) => value), (event: string) => {
+        this._mediaContent.on(Object.entries(EVENTS).map(([_, value]) => value), (event: string) => {
             logger.log("MediaContent event", event);
         });
 
@@ -85,15 +83,15 @@ class Player extends Emitter {
             ({ type, status }) => {
                 if (type === CONTENT_TYPE.ADS) {
                     if (status === PLAYBACK_STATUS.PLAYING) {
-                        adContent.play();
+                        this._adContent.play();
                     } else {
-                        adContent.pause();
+                        this._adContent.pause();
                     }
                 } else if (type === CONTENT_TYPE.VOD) {
                     if (status === PLAYBACK_STATUS.PLAYING) {
-                        mediaContent.play();
+                        this._mediaContent.play();
                     } else {
-                        mediaContent.pause();
+                        this._mediaContent.pause();
                     }
                 }
             }
@@ -104,19 +102,13 @@ class Player extends Emitter {
             ({ type, mute }) => {
                 logger.log(`Mute state changed to ${mute} for ${type}`);
                 if (type === CONTENT_TYPE.ADS) {
-                    mute ? adContent.mute() : adContent.unmute();
+                    mute ? this._adContent.mute() : this._adContent.unmute();
                 } else if (type === CONTENT_TYPE.VOD) {
-                    mute ? mediaContent.mute() : mediaContent.unmute();
+                    mute ? this._mediaContent.mute() : this._mediaContent.unmute();
                 }
             }
         );
     }
 }
 
-const playerConfig: PlayerConfig = {
-    assetId: CONFIG.ASSET_ID,
-    manifestUrl: CONFIG.MANIFEST_URL,
-};
-
-const player: Player = new Player();
-player.init(playerConfig);
+window.Player = Player;

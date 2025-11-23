@@ -217,7 +217,7 @@ class AdContent extends Emitter {
         });
     }
 
-    private dispose(): void {
+    public dispose(): void {
         if (this._adContext) {
             this._adContext.removeEventListener(window.tv.freewheel.SDK.EVENT_REQUEST_COMPLETE, this.onRequestComplete);
             this._adContext.removeEventListener(window.tv.freewheel.SDK.EVENT_SLOT_STARTED, this.onSlotStarted);
@@ -227,7 +227,6 @@ class AdContent extends Emitter {
             this._adContext.dispose();
             this._adContext = null;
             this._adVideoElement.src = "";
-            this._mediaContent.destroy();
         }
     }
 }

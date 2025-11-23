@@ -3,17 +3,480 @@
 
 <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
+    <meta name="description"
+        content="Freewheel HTML5 Video Player - Advanced HLS streaming with integrated ad management" />
+    <title>Freewheel HTML5 Video Player</title>
     <script type="text/javascript" src="https://mssl.fwmrm.net/libs/adm/7.8.0/AdManager.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/hls.js@1.6.2/dist/hls.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass-effect {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(6, 182, 212, 0.1);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            border-color: rgba(6, 182, 212, 0.5);
+            background: rgba(6, 182, 212, 0.05);
+        }
+
+        .section-title {
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #06b6d4 0%, #0ea5e9 100%);
+        }
+
+        code {
+            background: rgba(51, 65, 85, 0.5);
+            border-radius: 6px;
+            padding: 2px 6px;
+            color: #06b6d4;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .code-block {
+            background: rgba(15, 23, 42, 0.8);
+            border-left: 3px solid #06b6d4;
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #06b6d4;
+        }
+
+        .button-primary {
+            background: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%);
+            color: #0f172a;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .button-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(6, 182, 212, 0.3);
+        }
+
+        .button-secondary {
+            background: rgba(6, 182, 212, 0.1);
+            color: #06b6d4;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .button-secondary:hover {
+            background: rgba(6, 182, 212, 0.2);
+            border-color: #06b6d4;
+        }
+
+        .troubleshooting-item {
+            background: rgba(251, 146, 60, 0.05);
+            border-left: 3px solid #fb923c;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .troubleshooting-item strong {
+            color: #fb923c;
+        }
+    </style>
 </head>
 
-<body class="m-4">
-    <div id="container" style="position: relative; width: 640px; height: 360px; background-color: #000;"></div>
+<body>
+    <div class="min-h-screen">
+        <!-- Navigation/Header -->
+        <header class="border-b border-slate-700/50">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="text-center">
+                    <h1 class="text-5xl sm:text-6xl font-bold mb-4 gradient-text">
+                        Freewheel Video Player
+                    </h1>
+                    <p class="text-xl text-slate-400 max-w-2xl mx-auto">
+                        HLS streaming with integrated Freewheel ad management (client-side)
+                    </p>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-6xl mx-auto px-4 py-16 sm:px-6 lg:px-8 flex flex-col gap-16">
+            <!-- Features Section -->
+            <section>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="glass-effect card-hover rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-lg font-semibold text-cyan-400 mb-3">HLS Streaming</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Adaptive bitrate streaming with automatic quality selection for optimal viewing
+                        </p>
+                    </div>
+
+                    <div class="glass-effect card-hover rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-lg font-semibold text-cyan-400 mb-3">Ad Management</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Seamless Freewheel integration with intelligent ad scheduling and monetization
+                        </p>
+                    </div>
+
+                    <div class="glass-effect card-hover rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-lg font-semibold text-cyan-400 mb-3">Modern Stack</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Built with Preact, Zustand, and TypeScript for reliability and performance
+                        </p>
+                    </div>
+
+                    <div class="glass-effect card-hover rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-lg font-semibold text-cyan-400 mb-3">Custom Controls</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Intuitive playback and volume management with responsive UI design
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Player Section -->
+            <section>
+                <div class="glass-effect rounded-2xl p-8 border border-slate-700">
+                    <h2 class="text-3xl font-bold mb-8 section-title">Player</h2>
+                    <div class="bg-black rounded-lg overflow-hidden mb-6 shadow-2xl"
+                        style="box-shadow: 0 0 40px rgba(6, 182, 212, 0.15);">
+                        <div id="container">
+                            <video id="content" style="width: 100%; height: 100%;"></video>
+                            <div id="ad-container" style="position: absolute; top: 0; width: 100%; height: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Query String Controls Section -->
+            <section>
+                <div class="glass-effect rounded-2xl p-8 border border-slate-700">
+                    <h2 class="text-3xl font-bold mb-8 section-title">Demo Controls</h2>
+                    <p class="text-slate-400 mb-6">Manage query string parameters to control player behavior:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-effect rounded-xl p-6 border border-slate-700">
+                            <h3 class="text-lg font-semibold text-cyan-400 mb-4">Logging</h3>
+                            <p class="text-sm text-slate-400 mb-4">Enable console debug logging for all player events
+                            </p>
+                            <button id="btn-toggle-log" class="button-primary px-4 py-2 rounded-lg w-full">
+                                Toggle Logging
+                            </button>
+                            <p class="text-xs text-slate-500 mt-3">Query: <code id="qs-log-display">none</code></p>
+                        </div>
+
+                        <div class="glass-effect rounded-xl p-6 border border-slate-700">
+                            <h3 class="text-lg font-semibold text-cyan-400 mb-4">Current URL</h3>
+                            <p class="text-sm text-slate-400 mb-4">Full URL with query parameters</p>
+                            <input type="text" id="current-url" readonly
+                                class="w-full bg-slate-900 text-cyan-400 px-3 py-2 rounded text-xs border border-slate-600" />
+                            <p class="text-xs text-slate-500 mt-3">Click to copy</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Overview Section -->
+            <section>
+                <h2 class="text-3xl font-bold mb-8 section-title">Project Overview</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div>
+                        <p class="text-slate-300 mb-6 leading-relaxed">
+                            A web-based video player combining HLS streaming with
+                            Freewheel client-side ad insertion. Designed for broadcasters, content providers, and media
+                            platforms requiring reliable video delivery and monetization.
+                        </p>
+                        <h3 class="text-lg font-semibold text-cyan-400 mb-4">Key Capabilities</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start text-slate-300">
+                                <span class="text-cyan-400 mr-3 mt-1">→</span>
+                                <span>Adaptive bitrate streaming with automatic quality adjustment</span>
+                            </li>
+                            <li class="flex items-start text-slate-300">
+                                <span class="text-cyan-400 mr-3 mt-1">→</span>
+                                <span>Client-side ad insertion with Freewheel framework</span>
+                            </li>
+                            <li class="flex items-start text-slate-300">
+                                <span class="text-cyan-400 mr-3 mt-1">→</span>
+                                <span>Real-time state management with Zustand</span>
+                            </li>
+                            <li class="flex items-start text-slate-300">
+                                <span class="text-cyan-400 mr-3 mt-1">→</span>
+                                <span>Comprehensive event system for tracking and analytics</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold text-cyan-400 mb-4">Technology Stack</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center pb-3 border-b border-slate-700">
+                                <span class="text-slate-300">Frontend Framework</span>
+                                <span class="text-cyan-400 font-mono font-semibold">Preact 10</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-3 border-b border-slate-700">
+                                <span class="text-slate-300">State Management</span>
+                                <span class="text-cyan-400 font-mono font-semibold">Zustand</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-3 border-b border-slate-700">
+                                <span class="text-slate-300">Build Tool</span>
+                                <span class="text-cyan-400 font-mono font-semibold">Vite 6</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-3 border-b border-slate-700">
+                                <span class="text-slate-300">Language</span>
+                                <span class="text-cyan-400 font-mono font-semibold">TypeScript</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-3 border-b border-slate-700">
+                                <span class="text-slate-300">Package Manager</span>
+                                <span class="text-cyan-400 font-mono font-semibold">pnpm</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-300">Streaming Protocol</span>
+                                <span class="text-cyan-400 font-mono font-semibold">HLS.js</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Getting Started Section -->
+            <section>
+                <h2 class="text-3xl font-bold mb-8 section-title">Getting Started</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="glass-effect rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-lg font-semibold text-cyan-400 mb-4">Development</h3>
+                        <div class="code-block mb-4">
+                            pnpm install<br>
+                            pnpm dev
+                        </div>
+                        <p class="text-sm text-slate-400">Start local development server with hot reload</p>
+                    </div>
+
+                    <div class="glass-effect rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-lg font-semibold text-cyan-400 mb-4">Production Build</h3>
+                        <div class="code-block mb-4">
+                            pnpm build<br>
+                            pnpm preview
+                        </div>
+                        <p class="text-sm text-slate-400">Build optimized production bundle</p>
+                    </div>
+
+                    <div class="glass-effect rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-lg font-semibold text-cyan-400 mb-4">Configuration</h3>
+                        <div class="code-block mb-4">
+                            export const CONFIG = {
+                            &nbsp;&nbsp;ASSET_ID: "id",<br>
+                            &nbsp;&nbsp;MANIFEST_URL: "m3u8_url"<br>
+                            }
+                        </div>
+                        <p class="text-sm text-slate-400">Update config in src/config.ts</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Troubleshooting Section -->
+            <section>
+                <h2 class="text-3xl font-bold mb-8 section-title">Troubleshooting</h2>
+                <div class="space-y-4">
+                    <div class="troubleshooting-item">
+                        <strong>Blank Player Screen</strong>
+                        <p class="text-slate-300 text-sm mt-2">
+                            Verify HLS manifest URL in <code>src/config.ts</code> is correct and accessible. Check
+                            browser console for network errors.
+                        </p>
+                    </div>
+
+                    <div class="troubleshooting-item">
+                        <strong>No Ads Displaying</strong>
+                        <p class="text-slate-300 text-sm mt-2">
+                            Confirm Freewheel account credentials and ad request configuration. Enable logging with
+                            <code>?log</code> query parameter for debugging.
+                        </p>
+                    </div>
+
+                    <div class="troubleshooting-item">
+                        <strong>Enable Console Logging</strong>
+                        <p class="text-slate-300 text-sm mt-2">
+                            Append <code>?log</code> to URL to enable debug logging for all player events and state
+                            changes.
+                        </p>
+                    </div>
+
+                    <div class="troubleshooting-item">
+                        <strong>CORS Issues</strong>
+                        <p class="text-slate-300 text-sm mt-2">
+                            Ensure manifest URL and ad server support cross-origin requests. Configure appropriate CORS
+                            headers on your streaming infrastructure.
+                        </p>
+                    </div>
+
+                    <div class="troubleshooting-item">
+                        <strong>Browser Compatibility</strong>
+                        <p class="text-slate-300 text-sm mt-2">
+                            Modern browsers support HLS via HLS.js. Safari includes native HLS support. Test across
+                            target browsers for optimal experience.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <footer class="border-t border-slate-700/50">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="text-center">
+                    <p class="text-slate-400 mb-2">
+                        Freewheel HTML5 Video Player
+                    </p>
+                    <p class="text-slate-500 text-sm">
+                        Built with Preact, Zustand & TypeScript
+                    </p>
+                    <p class="text-slate-600 text-sm mt-4">
+                        <a href="https://github.com/pzanella/freewheel-html5-video-player" target="_blank"
+                            class="text-cyan-400 hover:text-cyan-300 transition">
+                            View on GitHub
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
 
     <script type="module" src="/src/main.ts"></script>
+
+    <script>
+        class QueryManager {
+            static getParam(key) {
+                const params = new URLSearchParams(window.location.search);
+                return params.get(key);
+            }
+
+            static setParam(key, value) {
+                const params = new URLSearchParams(window.location.search);
+                if (value === null) {
+                    params.delete(key);
+                } else {
+                    params.set(key, value);
+                }
+                const newUrl = `${window.location.pathname}?${params.toString()}`;
+                window.history.replaceState({ path: newUrl }, "", newUrl);
+                this.updateDisplay();
+            }
+
+            static toggleBoolParam(key) {
+                const currentValue = this.getParam(key);
+                const newValue = currentValue === "true" ? "false" : "true";
+                this.setParam(key, newValue);
+                return newValue === "true";
+            }
+
+            static reloadPage() {
+                window.location.reload();
+            }
+
+            static hasParam(key) {
+                const params = new URLSearchParams(window.location.search);
+                return params.has(key);
+            }
+
+            static getAllParams() {
+                const params = new URLSearchParams(window.location.search);
+                const result = {};
+                params.forEach((value, key) => {
+                    result[key] = value;
+                });
+                return result;
+            }
+
+            static updateDisplay() {
+                const logValue = this.getParam("log");
+                const logDisplay = document.getElementById("qs-log-display");
+                if (logDisplay) {
+                    logDisplay.textContent = logValue !== null ? `log=${logValue}` : "none";
+                }
+
+                const urlInput = document.getElementById("current-url");
+                if (urlInput) {
+                    urlInput.value = window.location.href;
+                }
+
+                const logBtn = document.getElementById("btn-toggle-log");
+
+                if (logBtn) {
+                    if (this.hasParam("log")) {
+                        logBtn.classList.remove("button-secondary");
+                        logBtn.classList.add("button-primary");
+                        logBtn.textContent = "Disable Logging";
+                    } else {
+                        logBtn.classList.remove("button-primary");
+                        logBtn.classList.add("button-secondary");
+                        logBtn.textContent = "Toggle Logging";
+                    }
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            QueryManager.updateDisplay();
+
+            const logBtn = document.getElementById("btn-toggle-log");
+            if (logBtn) {
+                logBtn.addEventListener("click", () => {
+                    QueryManager.toggleBoolParam("log");
+                    QueryManager.reloadPage();
+                });
+            }
+
+            const urlInput = document.getElementById("current-url");
+            if (urlInput) {
+                urlInput.addEventListener("click", () => {
+                    urlInput.select();
+                    document.execCommand("copy");
+                });
+            }
+
+            const playerConfig = {
+                assetId: 12345,
+                manifestUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+            };
+            const player = new Player();
+            player.init(playerConfig);
+        });
+    </script>
 </body>
 
 </html>

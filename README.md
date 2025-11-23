@@ -1,61 +1,194 @@
-# Simple Freewheel web player
+# 🎬 Freewheel HTML5 Video Player
 
-## Demo
-You can see the live player here: [GitHub Pages Demo](https://pzanella.github.io/freewheel-html5-video-player/)
+**Exploration & Documentation** - A simple demo and documentation project exploring the Freewheel client-side library integration with HLS streaming.
 
-## Quickstart
-The project requires Node.js version 20 or higher, you can use [NVM](https://github.com/nvm-sh/nvm).
-<br/>
-First, you need to install the dependencies. Run the following command:
+## ℹ️ Project Purpose
+
+This project serves as a learning resource for understanding:
+- Freewheel client-side ad insertion
+- HLS streaming with adaptive bitrate
+- State management patterns
+- Building video players with Preact
+
+**Note**: This is a basic implementation for educational purposes, not production-ready.
+
+## 🎮 Features
+
+- **HLS Streaming**: Adaptive bitrate streaming via HLS.js
+- **Freewheel Integration**: Client-side ad request and insertion
+- **Basic Controls**: Play/pause and mute/unmute buttons
+- **Click-to-Play**: Manual playback initiation
+- **Debug Logging**: Query parameter `?log` for console output
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+ ([install NVM](https://github.com/nvm-sh/nvm))
+- pnpm package manager
+
+### Development
+
+1. Install dependencies:
 ```bash
-npm i
+pnpm install
 ```
-After that, run this command to preview the project locally:
+
+2. Start development server:
 ```bash
-npm run dev
+pnpm dev
 ```
 
-## Building for Production
-To build the project for production:
+The app will be available at `http://localhost:5173`
+
+### Production Build
+
 ```bash
-npm run build
+pnpm build
 ```
 
-The output will be in the `dist` directory.
+Output will be in the `dist` directory.
 
-## GitHub Pages Deployment
-This project is configured to automatically deploy to GitHub Pages on every push to the `main` branch.
+### Preview Production Build
 
-### Setup
-1. Push your changes to the `main` branch
-2. The GitHub Actions workflow (`.github/workflows/deploy.yml`) will automatically:
-   - Install dependencies
-   - Build the project
-   - Deploy to GitHub Pages
-
-### Enabling GitHub Pages
-If it's your first time deploying:
-1. Go to your repository settings on GitHub
-2. Navigate to **Pages** section
-3. Under "Source", select **Deploy from a branch**
-4. Choose **gh-pages** branch and **/(root)** folder
-5. Click **Save**
-
-The workflow will automatically create the `gh-pages` branch on first deployment.
-
-### Access Your Player
-Once deployed, your player will be available at:
-```
-https://pzanella.github.io/freewheel-html5-video-player/
+```bash
+pnpm preview
 ```
 
-## Query Parameters
-You can enable logging by adding `?log` to the URL:
+## 🌐 Live Demo
+
+**[View the demo](https://pzanella.github.io/freewheel-html5-video-player/)**
+
+The project is automatically deployed to GitHub Pages on each push to `main`.
+
+## 🔧 Configuration
+
+Update the player configuration in the HTML page or pass it directly:
+
+```javascript
+const playerConfig = {
+    assetId: "your-asset-id",
+    manifestUrl: "https://your-hls-manifest.m3u8"
+};
+
+const player = new Player();
+player.init(playerConfig);
 ```
+
+## 🐛 Debug & Demo Controls
+
+### Query Parameters
+
+The demo page provides controls to manage query parameters:
+
+- **`?log`** - Enable console debug logging
+  - Click "Toggle Logging" button to add/remove
+  - Page reloads when toggled
+
+### Examples
+
+```
+# Enable logging
 https://pzanella.github.io/freewheel-html5-video-player/?log
 ```
 
-## Events
+## 📊 State Management
+
+The player uses **Zustand** for reactive state management:
+
+```typescript
+// Store state
+{
+    type: CONTENT_TYPE,           // ADS | VOD
+    playbackStatus: PLAYBACK_STATUS, // PLAYING | PAUSED
+    mute: boolean                 // Mute state
+}
+
+// Available actions
+togglePlayback()  // Toggle between PLAYING/PAUSED
+toggleMute()      // Toggle mute state
+setType(type)     // Set content type
+```
+
+## 🎮 Controls
+
+The player includes:
+
+- **Playback Button**: Play/pause toggle with visual feedback
+- **Volume Button**: Mute/unmute toggle
+- **Responsive Design**: Works on desktop, tablet, and mobile
+
+## 🏗️ Project Structure
+
+```
+src/
+├── main.ts              # Player initialization & orchestration
+├── store.ts             # Zustand state management
+├── logger.ts            # Debug logging utility
+├── model.ts             # TypeScript types & enums
+├── emitter.ts           # Event emitter base class
+├── controls/            # UI components
+│   ├── components/
+│   │   ├── Icon/        # SVG icon component system
+│   │   ├── Playback/    # Play/pause button
+│   │   └── Volume/      # Volume button
+│   └── index.ts         # Controls coordinator
+├── ad-content/          # Freewheel ad integration
+│   ├── index.ts
+│   ├── model.ts
+│   └── config.ts
+└── media-content/       # HLS video content
+    ├── index.ts
+    └── model.ts
+
+index.html              # Landing page with demo controls
+```
+
+## 📚 Technology Stack
+
+| Component | Version | Purpose |
+|-----------|---------|---------|
+| **Preact** | 10.27.2 | Lightweight UI framework |
+| **Zustand** | 5.0.8 | State management |
+| **Vite** | 6.2.0 | Build tool & dev server |
+| **TypeScript** | ~5.7.2 | Type safety |
+| **HLS.js** | 1.6.2 | HTTP Live Streaming |
+| **Tailwind CSS** | CDN | Styling |
+| **pnpm** | Latest | Package manager |
+
+## 🔌 Integration
+
+### Using in Your Application
+
+```javascript
+// Import Player class
+import Player from './path/to/player';
+
+// Configure and initialize
+const playerConfig = {
+    assetId: "your-asset-id",
+    manifestUrl: "https://your-stream.m3u8"
+};
+
+const container = document.getElementById('player-container');
+const player = new Player();
+player.init(playerConfig);
+
+// Listen to events
+player.on('play', () => console.log('Playing'));
+player.on('pause', () => console.log('Paused'));
+```
+
+### Event System
+
+The player fires events throughout its lifecycle:
+
+- `ADS_REQUEST_COMPLETE` - Ad request finished
+- `ADS_COMPLETE` - All ads played
+- `VIDEO_LOADEDMETADATA` - Video metadata loaded
+- `VIDEO_PLAYING` - Video started playing
+- `PLAYBACK_STATUS_CHANGED` - Play/pause state changed
+
+## Freewheel events
 ### onRequestInitiated
 Exposed as: 
 ```bash 
@@ -345,8 +478,6 @@ Exposed as:
 ```bash 
 window.tv.freewheel.SDK.EVENT_AD_IMPRESSION_END
 ```
-<a style="font-weight: bold; color: red;">TODO</a>
-
 ```ts
 {
     type: "adEvent",
@@ -362,8 +493,6 @@ Exposed as:
 ```bash 
 window.tv.freewheel.SDK.EVENT_SLOT_ENDED
 ```
-<a style="font-weight: bold; color: red;">TODO</a>
-
 ```ts
 {
     type: "onSlotEnded",

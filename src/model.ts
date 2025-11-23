@@ -2,13 +2,13 @@ declare global {
     interface Window {
         tv: any;
         Hls: any;
+        Player: any;
     }
 }
 
 export type PlayerConfig = {
     assetId: number | string;
     manifestUrl: string;
-    autoplay?: boolean;
 };
 
 export enum CONTENT_TYPE {
