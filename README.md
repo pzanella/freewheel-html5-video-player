@@ -1,4 +1,8 @@
 # Simple Freewheel web player
+
+## Demo
+You can see the live player here: [GitHub Pages Demo](https://pzanella.github.io/freewheel-html5-video-player/)
+
 ## Quickstart
 The project requires Node.js version 20 or higher, you can use [NVM](https://github.com/nvm-sh/nvm).
 <br/>
@@ -9,6 +13,46 @@ npm i
 After that, run this command to preview the project locally:
 ```bash
 npm run dev
+```
+
+## Building for Production
+To build the project for production:
+```bash
+npm run build
+```
+
+The output will be in the `dist` directory.
+
+## GitHub Pages Deployment
+This project is configured to automatically deploy to GitHub Pages on every push to the `main` branch.
+
+### Setup
+1. Push your changes to the `main` branch
+2. The GitHub Actions workflow (`.github/workflows/deploy.yml`) will automatically:
+   - Install dependencies
+   - Build the project
+   - Deploy to GitHub Pages
+
+### Enabling GitHub Pages
+If it's your first time deploying:
+1. Go to your repository settings on GitHub
+2. Navigate to **Pages** section
+3. Under "Source", select **Deploy from a branch**
+4. Choose **gh-pages** branch and **/(root)** folder
+5. Click **Save**
+
+The workflow will automatically create the `gh-pages` branch on first deployment.
+
+### Access Your Player
+Once deployed, your player will be available at:
+```
+https://pzanella.github.io/freewheel-html5-video-player/
+```
+
+## Query Parameters
+You can enable logging by adding `?log` to the URL:
+```
+https://pzanella.github.io/freewheel-html5-video-player/?log
 ```
 
 ## Events

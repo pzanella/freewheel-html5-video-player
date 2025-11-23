@@ -5,7 +5,7 @@ import mkcert from "vite-plugin-mkcert";
 export default defineConfig({
     mode: "production",
     root: process.cwd(),
-    base: "/dist/",
+    base: "/freewheel-html5-video-player/",
     build: {
         minify: true,
         modulePreload: false,
@@ -21,7 +21,6 @@ export default defineConfig({
         },
     },
     server: {
-        // host: "local.video.sky.it",
         open: "./index.html",
     },
     plugins: [
