@@ -50,6 +50,11 @@ jobs:
         run: pnpm install
 
       - name: Build project
+        env:
+          VITE_NETWORK_ID: ${{ secrets.VITE_NETWORK_ID }}
+          VITE_SERVER_URL: ${{ secrets.VITE_SERVER_URL }}
+          VITE_PROFILE_ID: ${{ secrets.VITE_PROFILE_ID }}
+          VITE_SITE_SECTION_ID: ${{ secrets.VITE_SITE_SECTION_ID }}
         run: pnpm run build
 
       - name: Setup Pages
